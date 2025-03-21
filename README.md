@@ -1,1 +1,1 @@
-An unnamed project.
+An online checklist application.
