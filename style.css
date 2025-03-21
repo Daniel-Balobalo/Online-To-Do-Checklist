@@ -1,79 +1,178 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+* {
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    box-sizing: border-box;
   }
   
+  /* Root Variables for Theming */
+  :root {
+    --primary-color: oklch(70% 0.2 200); /* Modern blue */
+    --secondary-color: oklch(80% 0.1 300); /* Soft purple */
+    --background-color: oklch(95% 0.05 200); /* Light background */
+    --text-color: oklch(20% 0.1 200); /* Dark text */
+    --glass-background: color-mix(in oklch, white, transparent 70%);
+    --glass-border: color-mix(in oklch, white, transparent 80%);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --spacing-unit: 1rem;
+    --border-radius: 12px;
+  }
+  
+  /* Body Styling */
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: var(--spacing-unit);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+  }
+  
+  /* Container */
   .container {
-    max-width: 800px;
+    width: min(100%, 800px);
     margin: 0 auto;
+    padding: var(--spacing-unit);
   }
   
+  /* Header */
   h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--primary-color);
     text-align: center;
-    color: #333;
+    margin-bottom: var(--spacing-unit);
+    font-weight: 700;
   }
   
+  /* Add New Checklist Button */
   #add-instance {
     display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    background-color: #28a745;
+    margin: 0 auto var(--spacing-unit);
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
   }
   
   #add-instance:hover {
-    background-color: #218838;
+    background-color: color-mix(in oklch, var(--primary-color), black 10%);
+    transform: translateY(-2px);
   }
   
+  #add-instance:active {
+    transform: translateY(0);
+  }
+  
+  /* Checklist Instance */
   .checklist-instance {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: var(--glass-background);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-unit);
+    margin-bottom: var(--spacing-unit);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .checklist-instance:hover {
+    box-shadow: 0 8px 12px -2px rgba(0, 0, 0, 0.15), 0 4px 8px -4px rgba(0, 0, 0, 0.1);
   }
   
   .checklist-instance h2 {
     margin-top: 0;
+    font-size: 1.5rem;
+    color: var(--primary-color);
   }
   
-  .checklist-instance input[type="text"] {
-    width: calc(100% - 22px);
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+  .checklist-instance input[type="text"],
+  .checklist-instance input[type="date"] {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: var(--spacing-unit);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    background: var(--glass-background);
+    font-size: 1rem;
+    color: var(--text-color);
+    transition: border-color 0.3s ease;
+  }
+  
+  .checklist-instance input[type="text"]:focus,
+  .checklist-instance input[type="date"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
   }
   
   .checklist-instance ul {
     list-style-type: disc;
-    padding-left: 20px;
+    padding-left: 1.5rem;
+    margin-bottom: var(--spacing-unit);
   }
   
   .checklist-instance ul li {
-    margin-bottom: 5px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    background: var(--glass-background);
+    border-radius: var(--border-radius);
+    transition: background 0.3s ease;
+  }
+  
+  .checklist-instance ul li:hover {
+    background: color-mix(in oklch, var(--glass-background), black 5%);
   }
   
   .checklist-instance button {
-    margin-right: 10px;
-    padding: 5px 10px;
+    padding: 0.5rem 1rem;
     border: none;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
   }
   
   .checklist-instance button.delete-list {
-    background-color: #dc3545;
+    background-color: oklch(60% 0.2 0); /* Red */
     color: white;
   }
   
+  .checklist-instance button.delete-list:hover {
+    background-color: color-mix(in oklch, oklch(60% 0.2 0), black 10%);
+    transform: translateY(-1px);
+  }
+  
   .checklist-instance button.delete-instance {
-    background-color: #ffc107;
-    color: black;
+    background-color: oklch(80% 0.1 50); /* Yellow */
+    color: var(--text-color);
+  }
+  
+  .checklist-instance button.delete-instance:hover {
+    background-color: color-mix(in oklch, oklch(80% 0.1 50), black 10%);
+    transform: translateY(-1px);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 600px) {
+    .container {
+      padding: 0.5rem;
+    }
+  
+    .checklist-instance {
+      padding: 0.75rem;
+    }
+  
+    .checklist-instance input[type="text"],
+    .checklist-instance input[type="date"] {
+      padding: 0.5rem;
+    }
   }
