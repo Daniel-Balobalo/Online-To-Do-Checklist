@@ -1,3 +1,4 @@
+/* Modern CSS Reset */
 * {
     margin: 0;
     padding: 0;
@@ -110,9 +111,10 @@
     outline: none;
   }
   
+  /* Custom Arrow List with Indentation */
   .checklist-instance ul {
-    list-style-type: disc;
-    padding-left: 1.5rem;
+    list-style: none; /* Remove default list styling */
+    padding-left: 1.5rem; /* Indentation for the list */
     margin-bottom: var(--spacing-unit);
   }
   
@@ -125,6 +127,16 @@
     background: var(--glass-background);
     border-radius: var(--border-radius);
     transition: background 0.3s ease;
+    position: relative;
+  }
+  
+  .checklist-instance ul li::before {
+    content: "→"; /* Arrow symbol */
+    position: absolute;
+    left: -1.5rem; /* Position the arrow in the indented space */
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    font-weight: bold;
   }
   
   .checklist-instance ul li:hover {
