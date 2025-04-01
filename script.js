@@ -5,15 +5,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load saved checklists from localStorage
   loadChecklists();
 
-  // Function to load saved checklists
   function loadChecklists() {
     const savedChecklists = JSON.parse(localStorage.getItem('checklists')) || [];
     savedChecklists.forEach((savedChecklist) => {
       createChecklistInstance(savedChecklist);
     });
+    
+    if (savedChecklists.length === 0) {
+      createChecklistInstance();
+    }
   }
 
-  // Function to save checklists to localStorage
   function saveChecklists() {
     const checklists = [];
     document.querySelectorAll('.checklist-instance').forEach((instance) => {
@@ -21,60 +23,66 @@ document.addEventListener('DOMContentLoaded', () => {
       const date = instance.querySelector('input[type="date"]').value;
       const items = [];
       instance.querySelectorAll('ul li').forEach((item) => {
-        items.push(item.textContent.replace('🗑', '').trim());
+        items.push({
+          text: item.querySelector('.item-text').textContent,
+          completed: item.classList.contains('completed')
+        });
       });
       checklists.push({ title, date, items });
     });
     localStorage.setItem('checklists', JSON.stringify(checklists));
   }
 
-  // Function to create a new checklist instance
   function createChecklistInstance(savedChecklist = {}) {
     const checklistInstance = document.createElement('div');
     checklistInstance.classList.add('checklist-instance');
 
-    // Add title input
+    // Title input
     const titleInput = document.createElement('input');
     titleInput.type = 'text';
     titleInput.placeholder = 'Enter checklist title';
     titleInput.value = savedChecklist.title || '';
     checklistInstance.appendChild(titleInput);
 
-    // Add date input (default to today)
+    // Date input
     const dateInput = document.createElement('input');
     dateInput.type = 'date';
     dateInput.value = savedChecklist.date || new Date().toISOString().split('T')[0];
     checklistInstance.appendChild(dateInput);
 
-    // Add list container
+    // List container
     const listContainer = document.createElement('ul');
     checklistInstance.appendChild(listContainer);
 
-    // Add saved list items
+    // Saved items
     if (savedChecklist.items) {
       savedChecklist.items.forEach((item) => {
-        addListItem(listContainer, item);
+        addListItem(listContainer, item.text, item.completed);
       });
     }
 
-    // Add input for new list item
+    // New item input
+    const itemInputContainer = document.createElement('div');
+    itemInputContainer.classList.add('item-input-container');
+    
     const newItemInput = document.createElement('input');
     newItemInput.type = 'text';
     newItemInput.placeholder = 'Add new list item';
-    checklistInstance.appendChild(newItemInput);
+    itemInputContainer.appendChild(newItemInput);
 
-    // Add button to add new list item (disabled by default)
     const addItemButton = document.createElement('button');
-    addItemButton.textContent = 'Add Item';
-    addItemButton.disabled = true; // Disabled initially
-    checklistInstance.appendChild(addItemButton);
+    addItemButton.textContent = 'Add';
+    addItemButton.classList.add('add-item');
+    addItemButton.disabled = true;
+    itemInputContainer.appendChild(addItemButton);
 
-    // Enable/disable "Add Item" button based on input
+    checklistInstance.appendChild(itemInputContainer);
+
+    // Event listeners for new item
     newItemInput.addEventListener('input', () => {
       addItemButton.disabled = newItemInput.value.trim() === '';
     });
 
-    // Press Enter to add item
     newItemInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter' && newItemInput.value.trim() !== '') {
         addListItem(listContainer, newItemInput.value.trim());
@@ -84,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Click to add item
     addItemButton.addEventListener('click', () => {
       if (newItemInput.value.trim() !== '') {
         addListItem(listContainer, newItemInput.value.trim());
@@ -94,53 +101,91 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Add button to delete the entire instance (with confirmation)
+    // Actions container
+    const actionsContainer = document.createElement('div');
+    actionsContainer.classList.add('actions-container');
+
+    // Clear completed button
+    const clearCompletedButton = document.createElement('button');
+    clearCompletedButton.textContent = 'Clear Completed';
+    clearCompletedButton.classList.add('delete-instance');
+    clearCompletedButton.addEventListener('click', () => {
+      listContainer.querySelectorAll('li.completed').forEach(item => {
+        item.classList.add('deleting');
+        setTimeout(() => item.remove(), 300);
+      });
+      setTimeout(saveChecklists, 350);
+    });
+    actionsContainer.appendChild(clearCompletedButton);
+
+    // Delete instance button - FIXED VERSION
     const deleteInstanceButton = document.createElement('button');
     deleteInstanceButton.textContent = 'Delete Checklist';
     deleteInstanceButton.classList.add('delete-instance');
-    deleteInstanceButton.addEventListener('click', () => {
+    deleteInstanceButton.addEventListener('click', (e) => {
+      e.stopPropagation();
       if (confirm('Are you sure you want to delete this checklist?')) {
-        checklistInstance.remove();
-        saveChecklists();
+        checklistInstance.classList.add('deleting');
+        setTimeout(() => {
+          if (checklistInstance.parentNode) {
+            checklistInstance.remove();
+            if (checklistsContainer.children.length === 0) {
+              createChecklistInstance();
+            }
+            saveChecklists();
+          }
+        }, 300);
       }
     });
-    checklistInstance.appendChild(deleteInstanceButton);
+    actionsContainer.appendChild(deleteInstanceButton);
 
-    // Append the new checklist instance to the container
+    checklistInstance.appendChild(actionsContainer);
     checklistsContainer.appendChild(checklistInstance);
 
-    // Auto-focus title input for new checklists
     if (!savedChecklist.title) titleInput.focus();
-
-    // Save checklists on title/date changes
     titleInput.addEventListener('input', saveChecklists);
     dateInput.addEventListener('change', saveChecklists);
   }
 
-  // Helper function to add a list item
-  function addListItem(listContainer, text) {
+  function addListItem(listContainer, text, isCompleted = false) {
     const listItem = document.createElement('li');
-    listItem.textContent = text;
+    if (isCompleted) listItem.classList.add('completed');
 
-    // Add delete button for the list item
-    const deleteItemButton = document.createElement('button');
-    deleteItemButton.innerHTML = '&#128465;';
-    deleteItemButton.classList.add('delete-list');
-    deleteItemButton.addEventListener('click', () => {
-      listItem.remove();
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.classList.add('item-checkbox');
+    checkbox.checked = isCompleted;
+    checkbox.addEventListener('change', () => {
+      listItem.classList.toggle('completed', checkbox.checked);
       saveChecklists();
     });
 
+    const itemText = document.createElement('span');
+    itemText.classList.add('item-text');
+    itemText.textContent = text;
+
+    const deleteItemButton = document.createElement('button');
+    deleteItemButton.innerHTML = '🗑';
+    deleteItemButton.classList.add('delete-list');
+    deleteItemButton.title = 'Delete item';
+    deleteItemButton.addEventListener('click', () => {
+      listItem.classList.add('deleting');
+      setTimeout(() => {
+        listItem.remove();
+        saveChecklists();
+      }, 300);
+    });
+
+    listItem.appendChild(checkbox);
+    listItem.appendChild(itemText);
     listItem.appendChild(deleteItemButton);
     listContainer.appendChild(listItem);
   }
 
-  // Add new checklist instance
   addInstanceButton.addEventListener('click', () => {
     createChecklistInstance();
   });
 
-  // Press Enter in title/date inputs to blur (improves keyboard UX)
   document.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && e.target.matches('.checklist-instance input[type="text"]')) {
       e.target.blur();
