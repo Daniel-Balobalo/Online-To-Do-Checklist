@@ -150,7 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function addListItem(listContainer, text, isCompleted = false) {
     const listItem = document.createElement('li');
     if (isCompleted) listItem.classList.add('completed');
-
+  
+    // Create container for checkbox and text
+    const itemContent = document.createElement('div');
+    itemContent.classList.add('item-content');
+  
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.classList.add('item-checkbox');
@@ -159,25 +163,28 @@ document.addEventListener('DOMContentLoaded', () => {
       listItem.classList.toggle('completed', checkbox.checked);
       saveChecklists();
     });
-
+  
     const itemText = document.createElement('span');
     itemText.classList.add('item-text');
     itemText.textContent = text;
-
+  
     const deleteItemButton = document.createElement('button');
     deleteItemButton.innerHTML = '🗑';
     deleteItemButton.classList.add('delete-list');
     deleteItemButton.title = 'Delete item';
-    deleteItemButton.addEventListener('click', () => {
+    deleteItemButton.addEventListener('click', (e) => {
+      e.stopPropagation();
       listItem.classList.add('deleting');
       setTimeout(() => {
         listItem.remove();
         saveChecklists();
       }, 300);
     });
-
-    listItem.appendChild(checkbox);
-    listItem.appendChild(itemText);
+  
+    // Assemble the structure
+    itemContent.appendChild(checkbox);
+    itemContent.appendChild(itemText);
+    listItem.appendChild(itemContent);
     listItem.appendChild(deleteItemButton);
     listContainer.appendChild(listItem);
   }

@@ -5,256 +5,265 @@
   box-sizing: border-box;
 }
 
-/* Root Variables for Theming */
+/* Yellow Notepad Theme */
 :root {
-  --primary-color: oklch(70% 0.2 200);
-  --secondary-color: oklch(80% 0.1 300);
-  --background-color: oklch(95% 0.05 200);
-  --text-color: oklch(20% 0.1 200);
-  --glass-background: color-mix(in oklch, white, transparent 70%);
-  --glass-border: color-mix(in oklch, white, transparent 80%);
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --paper-color: #fff9c4; /* Light yellow */
+  --paper-line: #ffeb3b; /* Yellow divider */
+  --ink-color: #5d4037; /* Dark brown */
+  --highlight-color: #ffc107; /* Amber */
+  --danger-color: #f44336; /* Red */
+  --border-radius: 4px;
   --spacing-unit: 1rem;
-  --border-radius: 12px;
-  --completed-opacity: 0.6;
 }
 
-/* Body Styling */
+/* Body Styling - Notepad Background */
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
+  font-family: 'Courier New', monospace;
+  background-color: #f5f5f5;
+  background-image: 
+    linear-gradient(#e0e0e0 1px, transparent 1px),
+    linear-gradient(90deg, #e0e0e0 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: var(--ink-color);
   line-height: 1.6;
   padding: var(--spacing-unit);
   min-height: 100vh;
-  display: grid;
-  place-items: center;
 }
 
-/* Empty State */
-#checklists-container:empty::before {
-  content: "No checklists yet. Click 'Add New Checklist' to get started!";
-  display: block;
-  text-align: center;
-  color: oklch(60% 0.05 200);
-  padding: 2rem;
-}
-
-/* Container */
+/* Container - The Notepad */
 .container {
-  width: min(100%, 800px);
-  margin: 0 auto;
-  padding: var(--spacing-unit);
+  width: min(100%, 600px);
+  margin: 2rem auto;
+  padding: 2rem 1.5rem;
+  background-color: var(--paper-color);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  border-left: 6px double var(--paper-line);
+  position: relative;
+}
+
+.container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 30px;
+  right: 0;
+  height: 100%;
+  background: repeating-linear-gradient(
+    var(--paper-color),
+    var(--paper-color) 24px,
+    var(--paper-line) 25px,
+    var(--paper-line) 26px
+  );
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 /* Header */
 h1 {
-  font-size: clamp(2rem, 5vw, 3rem);
-  color: var(--primary-color);
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  color: var(--ink-color);
   text-align: center;
-  margin-bottom: var(--spacing-unit);
+  margin-bottom: 1.5rem;
   font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  position: relative;
+  z-index: 1;
 }
 
 /* Add New Checklist Button */
 #add-instance {
   display: block;
-  margin: 0 auto var(--spacing-unit);
-  padding: 0.75rem 1.5rem;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
+  margin: 0 auto 1.5rem;
+  padding: 0.5rem 1.5rem;
+  background-color: var(--highlight-color);
+  color: var(--ink-color);
+  border: 1px solid var(--ink-color);
   border-radius: var(--border-radius);
   cursor: pointer;
+  font-family: inherit;
   font-size: 1rem;
   font-weight: 600;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
 }
 
 #add-instance:hover {
-  background-color: color-mix(in oklch, var(--primary-color), black 10%);
+  background-color: color-mix(in oklch, var(--highlight-color), black 10%);
   transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-#add-instance:active {
-  transform: translateY(0);
-}
-
-/* Checklist Instance */
+/* Checklist Instance - Sticky Note Style */
 .checklist-instance {
-  background: var(--glass-background);
-  border: 1px solid var(--glass-border);
+  background: var(--paper-color);
+  border: 1px solid var(--paper-line);
   border-radius: var(--border-radius);
-  padding: var(--spacing-unit);
-  margin-bottom: var(--spacing-unit);
-  backdrop-filter: blur(10px);
-  box-shadow: var(--shadow);
-  transition: box-shadow 0.3s ease;
-  animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
 }
 
 .checklist-instance:hover {
-  box-shadow: 0 8px 12px -2px rgba(0, 0, 0, 0.15), 0 4px 8px -4px rgba(0, 0, 0, 0.1);
+  box-shadow: 4px 4px 8px rgba(0,0,0,0.15);
 }
 
-.checklist-instance h2 {
-  margin-top: 0;
-  font-size: 1.5rem;
-  color: var(--primary-color);
+.checklist-instance::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  border-style: solid;
+  border-width: 0 0 20px 20px;
+  border-color: transparent transparent var(--paper-line) transparent;
 }
 
+/* Input Fields */
 .checklist-instance input[type="text"],
 .checklist-instance input[type="date"] {
   width: 100%;
-  padding: 0.75rem;
-  margin-bottom: var(--spacing-unit);
-  border: 1px solid var(--glass-border);
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--paper-line);
   border-radius: var(--border-radius);
-  background: var(--glass-background);
+  background: white;
+  font-family: inherit;
   font-size: 1rem;
-  color: var(--text-color);
-  transition: border-color 0.3s ease;
+  color: var(--ink-color);
+  box-shadow: inset 1px 1px 3px rgba(0,0,0,0.1);
 }
 
 .checklist-instance input[type="text"]:focus,
 .checklist-instance input[type="date"]:focus {
-  border-color: var(--primary-color);
+  border-color: var(--highlight-color);
   outline: none;
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--highlight-color), white 50%);
 }
 
 /* Checklist Items */
-.checklist-instance ul {
-  list-style: none;
-  padding-left: 0;
-  margin-bottom: var(--spacing-unit);
+.checklist-instance ul li {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background: white;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+  border-left: 3px solid var(--highlight-color);
+  justify-content: space-between; /* Added this line */
+}
+
+/* Item text container */
+.checklist-instance ul li .item-content {
+  display: flex;
+  align-items: center;
+  flex-grow: 1; /* Added this line */
+  gap: 0.5rem; /* Added this line */
+}
+
+/* Delete button positioning */
+.checklist-instance ul li .delete-list {
+  margin-left: auto; /* This pushes it to the far right */
 }
 
 .checklist-instance ul li {
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
-  padding: 0.75rem;
-  background: var(--glass-background);
+  padding: 0.5rem;
+  background: white;
   border-radius: var(--border-radius);
-  transition: all 0.3s ease;
-  gap: 0.75rem;
+  transition: all 0.2s ease;
+  border-left: 3px solid var(--highlight-color);
 }
 
 .checklist-instance ul li:hover {
-  background: color-mix(in oklch, var(--glass-background), black 5%);
+  background: color-mix(in oklch, white, var(--highlight-color) 10%);
 }
 
 .checklist-instance ul li.completed {
-  opacity: var(--completed-opacity);
+  opacity: 0.7;
 }
 
 .checklist-instance ul li.completed .item-text {
   text-decoration: line-through;
+  color: color-mix(in oklch, var(--ink-color), white 40%);
 }
 
+/* Checkboxes */
 .checklist-instance ul li .item-checkbox {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.2rem;
+  height: 1.2rem;
   cursor: pointer;
-}
-
-.checklist-instance ul li .item-text {
-  flex-grow: 1;
-  word-break: break-word;
+  accent-color: var(--highlight-color);
+  margin-right: 0.5rem;
 }
 
 /* Buttons */
 .checklist-instance button {
-  padding: 0.5rem 1rem;
-  border: none;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--ink-color);
   border-radius: var(--border-radius);
   cursor: pointer;
+  font-family: inherit;
   font-size: 0.875rem;
   font-weight: 600;
   transition: all 0.2s ease;
 }
 
 .checklist-instance button.add-item {
-  background-color: var(--secondary-color);
-  color: white;
-}
-
-.checklist-instance button.add-item:hover {
-  background-color: color-mix(in oklch, var(--secondary-color), black 10%);
-  transform: translateY(-1px);
+  background-color: var(--highlight-color);
+  color: var(--ink-color);
 }
 
 .checklist-instance button.delete-list {
-  background-color: oklch(60% 0.2 0);
+  background-color: var(--danger-color);
   color: white;
-  width: 2rem;
-  height: 2rem;
+  border-color: var(--danger-color);
+  width: 1.8rem;
+  height: 1.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
 }
 
-.checklist-instance button.delete-list:hover {
-  background-color: color-mix(in oklch, oklch(60% 0.2 0), black 10%);
-  transform: translateY(-1px);
-}
-
 .checklist-instance button.delete-instance {
-  background-color: oklch(80% 0.1 50);
-  color: var(--text-color);
-}
-
-.checklist-instance button.delete-instance:hover {
-  background-color: color-mix(in oklch, oklch(80% 0.1 50), black 10%);
-  transform: translateY(-1px);
-}
-
-/* Item Input Container */
-.item-input-container {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: var(--spacing-unit);
-}
-
-.item-input-container input {
-  flex-grow: 1;
-}
-
-/* Actions Container */
-.actions-container {
-  display: flex;
-  justify-content: space-between;
-  margin-top: var(--spacing-unit);
+  background-color: white;
+  color: var(--ink-color);
 }
 
 /* Responsive Design */
 @media (max-width: 600px) {
   .container {
-    padding: 0.5rem;
+    padding: 1.5rem 1rem;
+    margin: 1rem auto;
   }
-
+  
   .checklist-instance {
-    padding: 0.75rem;
-  }
-
-  .checklist-instance input[type="text"],
-  .checklist-instance input[type="date"] {
-    padding: 0.5rem;
+    padding: 1rem;
   }
 }
 
-.checklist-instance.deleting {
-  animation: fadeOut 0.3s ease-out;
-  opacity: 0;
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeOut {
   from { opacity: 1; transform: translateY(0); }
   to { opacity: 0; transform: translateY(-10px); }
+}
+
+.checklist-instance {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.checklist-instance.deleting {
+  animation: fadeOut 0.3s ease-out;
 }
