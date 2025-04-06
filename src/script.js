@@ -105,20 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const actionsContainer = document.createElement('div');
     actionsContainer.classList.add('actions-container');
 
-    // Clear completed button
-    const clearCompletedButton = document.createElement('button');
-    clearCompletedButton.textContent = 'Clear Completed';
-    clearCompletedButton.classList.add('delete-instance');
-    clearCompletedButton.addEventListener('click', () => {
-      listContainer.querySelectorAll('li.completed').forEach(item => {
-        item.classList.add('deleting');
-        setTimeout(() => item.remove(), 300);
-      });
-      setTimeout(saveChecklists, 350);
-    });
-    actionsContainer.appendChild(clearCompletedButton);
-
-    // Delete instance button - FIXED VERSION
+    // Delete instance button
     const deleteInstanceButton = document.createElement('button');
     deleteInstanceButton.textContent = 'Delete Checklist';
     deleteInstanceButton.classList.add('delete-instance');
@@ -150,11 +137,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function addListItem(listContainer, text, isCompleted = false) {
     const listItem = document.createElement('li');
     if (isCompleted) listItem.classList.add('completed');
-  
+
     // Create container for checkbox and text
     const itemContent = document.createElement('div');
     itemContent.classList.add('item-content');
-  
+
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.classList.add('item-checkbox');
@@ -163,11 +150,26 @@ document.addEventListener('DOMContentLoaded', () => {
       listItem.classList.toggle('completed', checkbox.checked);
       saveChecklists();
     });
-  
+
     const itemText = document.createElement('span');
     itemText.classList.add('item-text');
     itemText.textContent = text;
-  
+
+    // Create actions container
+    const itemActions = document.createElement('div');
+    itemActions.classList.add('item-actions');
+
+    // Edit button
+    const editItemButton = document.createElement('button');
+    editItemButton.innerHTML = '✏️';
+    editItemButton.classList.add('edit-list');
+    editItemButton.title = 'Edit item';
+    editItemButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      editListItem(listItem, itemText);
+    });
+
+    // Delete button
     const deleteItemButton = document.createElement('button');
     deleteItemButton.innerHTML = '🗑';
     deleteItemButton.classList.add('delete-list');
@@ -180,13 +182,44 @@ document.addEventListener('DOMContentLoaded', () => {
         saveChecklists();
       }, 300);
     });
-  
-    // Assemble the structure
+
+    // Assemble structure
     itemContent.appendChild(checkbox);
     itemContent.appendChild(itemText);
+    itemActions.appendChild(editItemButton);
+    itemActions.appendChild(deleteItemButton);
     listItem.appendChild(itemContent);
-    listItem.appendChild(deleteItemButton);
+    listItem.appendChild(itemActions);
     listContainer.appendChild(listItem);
+  }
+
+  function editListItem(listItem, itemTextElement) {
+    const currentText = itemTextElement.textContent;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentText;
+    input.classList.add('edit-input');
+    
+    // Replace text with input field
+    itemTextElement.replaceWith(input);
+    input.focus();
+    
+    // Handle saving on Enter or blur
+    const saveEdit = () => {
+      const newText = input.value.trim();
+      if (newText && newText !== currentText) {
+        itemTextElement.textContent = newText;
+        saveChecklists();
+      }
+      input.replaceWith(itemTextElement);
+    };
+    
+    input.addEventListener('blur', saveEdit);
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        saveEdit();
+      }
+    });
   }
 
   addInstanceButton.addEventListener('click', () => {
